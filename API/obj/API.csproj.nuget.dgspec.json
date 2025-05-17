@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\andre\\OneDrive\\Desktop\\JwtAuth\\API\\API.csproj": {}
+    "C:\\Users\\andre\\OneDrive\\Desktop\\JwtAuth\\api\\API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\andre\\OneDrive\\Desktop\\JwtAuth\\API\\API.csproj": {
+    "C:\\Users\\andre\\OneDrive\\Desktop\\JwtAuth\\api\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\andre\\OneDrive\\Desktop\\JwtAuth\\API\\API.csproj",
+        "projectUniqueName": "C:\\Users\\andre\\OneDrive\\Desktop\\JwtAuth\\api\\API.csproj",
         "projectName": "API",
-        "projectPath": "C:\\Users\\andre\\OneDrive\\Desktop\\JwtAuth\\API\\API.csproj",
+        "projectPath": "C:\\Users\\andre\\OneDrive\\Desktop\\JwtAuth\\api\\API.csproj",
         "packagesPath": "C:\\Users\\andre\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\andre\\OneDrive\\Desktop\\JwtAuth\\API\\obj\\",
+        "outputPath": "C:\\Users\\andre\\OneDrive\\Desktop\\JwtAuth\\api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\andre\\AppData\\Roaming\\NuGet\\NuGet.Config",
