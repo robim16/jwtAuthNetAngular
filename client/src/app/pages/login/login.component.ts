@@ -27,6 +27,13 @@ export class LoginComponent implements OnInit{
           duration: 5000,
           horizontalPosition: 'center'
         })
+        this.router.navigate(['/'])
+      },
+      error: (error) => {
+        this.matSnackBar.open(error.error.message, 'Close', {
+          duration: 5000,
+          horizontalPosition: 'center'
+        })
       }
     })
   }
