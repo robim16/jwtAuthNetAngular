@@ -1,5 +1,14 @@
 <div class="h-screen flex items-center justify-center">
     <form class="shadow-md rounded-md p-5 bg-white w-1/5" [formGroup]="registerForm" (ngSubmit)="register()">
+        
+        @for(error of errors; track error) {
+            <div class="bg-red-100 border mb-2 flex flex-col gap-2 border-red-400 text-red-400 px4 py4 rounded-md relative">
+                <div class="text-xs p-2">
+                    {{ error.description }}
+                </div>
+            </div>
+        }
+        
         <div class="py-4">
             <h1 class="font-bold text-left py-2">
                 Register
@@ -21,8 +30,9 @@
         <mat-form-field appearance="fill" class="w-full">
             <mat-label> Roles</mat-label>
             <mat-select formControlName="roles" multiple>
-                <mat-option>Admin</mat-option>
-                <mat-option>User</mat-option>
+                @for (item of roles$ | async; track item) {
+                    <mat-option [value]="item.name">{{ item.name }}</mat-option>
+                }
             </mat-select>
             <mat-icon matPrefix>groups</mat-icon>
         </mat-form-field>
@@ -37,10 +47,17 @@
             <mat-label> Confirm Password</mat-label>
             <input formControlName="confirmPassword" type="{{confirmPasswordHide ? 'password':'text'}}" matInput placeholder="Confirm Password">
             <mat-icon matPrefix>lock</mat-icon>
-            <mat-icon (click)="confirmPasswordHide = !confirmPasswordHide" matSuffix>{{confirmPasswordHide ? 'visibility_off': 'visibility'}}</mat-icon>
+            <mat-icon (click)="confirmPasswordHide = !confirmPasswordHide" matSuffix>
+                {{confirmPasswordHide ? 'visibility_off': 'visibility'}}</mat-icon>
         </mat-form-field>
 
-        <button class="w-full border-collapse text-white border-slate-200 disabled:bg-purple-400 py-2 
+        <span
+            class="text-red-600" 
+            *ngIf="registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.dirty && registerForm.get('confirmPassword')?.touched">
+            Passwords do no match
+        </span>
+
+        <button [disabled]="!registerForm.valid" class="w-full border-collapse text-white border-slate-200 disabled:bg-purple-400 py-2 
             px-3 bg-purple-700" type="submit">
             Register
         </button>
