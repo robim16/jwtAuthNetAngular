@@ -12,13 +12,13 @@ import { UserDetail } from '../interfaces/user-detail';
   providedIn: 'root'
 })
 export class AuthService {
- 
+
   apiUrl: string = environment.apiUrl;
   private tokenKey = 'token';
 
-  constructor(private http:HttpClient) { }
+  constructor(private http: HttpClient) { }
 
-  login(data:LoginRequest):Observable<AuthResponse>{
+  login(data: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}account/login`, data).pipe(
       map((response) => {
         if (response.isSuccess) {
@@ -29,7 +29,7 @@ export class AuthService {
     );
   }
 
-  register(data:RegisterRequest):Observable<AuthResponse>{
+  register(data: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}account/register`, data);
   }
 
@@ -38,10 +38,10 @@ export class AuthService {
     this.http.get<UserDetail>(`${this.apiUrl}account/detail`)
 
 
-  getUserDetail=()=>{
+  getUserDetail = () => {
     const token = this.getToken()
-    if(!token) return null
-    const decodedToken:any = jwtDecode(token)
+    if (!token) return null
+    const decodedToken: any = jwtDecode(token)
     const userDetail = {
       id: decodedToken.nameid,
       fullName: decodedToken.name,
@@ -53,7 +53,7 @@ export class AuthService {
   }
 
 
-  isLoggedIn=():boolean=>{
+  isLoggedIn = (): boolean => {
     const token = this.getToken()
     if (!token) return false;
 
@@ -70,11 +70,21 @@ export class AuthService {
     return isTokenExpired
   }
 
+  getRoles = (): string[] | null => {
+    const token = this.getToken()
+    if (!token) return null
+
+    const decodedToken:any = jwtDecode(token)
+    return decodedToken.role || null
+  }
 
   logout = (): void => {
     localStorage.removeItem(this.tokenKey)
   }
-  
-  private getToken = (): string | null =>
+
+  getAll = (): Observable<UserDetail[]> => 
+    this.http.get<UserDetail[]>(`${this.apiUrl}account`)
+
+  getToken = (): string | null =>
     localStorage.getItem(this.tokenKey) || '';
 }

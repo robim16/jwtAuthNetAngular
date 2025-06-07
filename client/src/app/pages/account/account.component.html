@@ -5,7 +5,7 @@
         </h1>
         <div *ngIf="accountDetail$ | async as user">
             <div class="text-center">
-                <div class="rounded-full bg-blue-500 my-4 text-4xl w-2/4 h-2/4 inline-flex items-center justify-center font-bold text-white">
+                <div class="rounded-full bg-blue-500 my-4 text-4xl w-24 h-24 inline-flex items-center justify-center font-bold text-white">
                     {{ user.fullName[0] | uppercase}}
                 </div>
             </div>
@@ -23,11 +23,20 @@
 
                 <div>
                     <ul class="flex gap-1 text-xs">
-                        <li class="bg-green-700 text-white rounded-md py-1 px-2">
-
+                        <li *ngFor="let role of user.roles" 
+                            class="bg-green-700 text-white rounded-md py-1 px-2">
+                            {{ role }}
                         </li>
                     </ul>
                 </div>
+                <div class="text-gray-600 font-bold">
+                    phone
+                </div>
+                <div class="text-gray-800 font-medium">{{ user.phoneNumber || '-'}}</div>
+                <div class="text-gray-600 font-bold">
+                    Access Failed Count
+                </div>
+                <div class="text-gray-800 font-medium">{{ user.accessFailedCount || '-'}}</div>
             </div>
         </div>
     </div>
