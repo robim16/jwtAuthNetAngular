@@ -7,7 +7,7 @@ import { Router, RouterLink } from '@angular/router';
 import { RoleService } from '../../services/role.service';
 import { Observable } from 'rxjs';
 import { Role } from '../../interfaces/role';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -16,7 +16,7 @@ import { ValidationError } from '../../interfaces/validation-error';
 
 @Component({
   selector: 'app-register',
-  imports: [MatInputModule, ReactiveFormsModule,
+  imports: [CommonModule, MatInputModule, ReactiveFormsModule,
     RouterLink, MatSelectModule, MatIconModule, AsyncPipe],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
