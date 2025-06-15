@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using Api.Dtos;
@@ -112,6 +113,23 @@ namespace API.Controllers
         }
 
 
+        public async Task<ActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
+
+            if (user is null)
+            {
+                return Ok(new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Message = "User does not exist with this email"
+                });
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = $"http://localhost:4200/reset-password?email={user.Email}&token={WebUtility.UrlEncode(token)}";
+        }
+
         private string GenerateToken(AppUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -120,7 +138,7 @@ namespace API.Controllers
 
             var roles = _userManager.GetRolesAsync(user).Result;
 
-            List<Claim> claims = 
+            List<Claim> claims =
             [
                 new (JwtRegisteredClaimNames.Email,user.Email??""),
                 new (JwtRegisteredClaimNames.Name,user.FullName??""),
@@ -136,7 +154,8 @@ namespace API.Controllers
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            var tokenDescriptor = new SecurityTokenDescriptor{
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = new SigningCredentials(
