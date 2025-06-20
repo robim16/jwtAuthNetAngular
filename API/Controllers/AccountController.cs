@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using RestSharp;
 
 namespace API.Controllers
 {
@@ -113,6 +114,8 @@ namespace API.Controllers
         }
 
 
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
         public async Task<ActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
         {
             var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
@@ -128,7 +131,48 @@ namespace API.Controllers
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var resetLink = $"http://localhost:4200/reset-password?email={user.Email}&token={WebUtility.UrlEncode(token)}";
+
+            var client = new RestClient("https://send.api.mailtrap.io/api/send");
+
+            var request = new RestRequest
+            {
+                Method = Method.Post,
+                RequestFormat = DataFormat.Json
+            };
+
+
+            request.AddHeader("Authorization", "Bearer ecbc336f43b16a18dfb01350b4567c8d");
+
+            request.AddJsonBody(new
+            {
+                from = new { email = "mailtrap@demomailtrap.com" },
+                to = new[] { new { email = user.Email } },
+                template_uuid = "c0fb4b11-f48c-4500-9e55-32b2e1df83ff",
+                template_variables = new { user_email = user.Email, pass_reset_link = resetLink }
+            });
+
+
+            var response = client.Execute(request);
+
+
+            if (response.IsSuccessful)
+            {
+                return Ok(new AuthResponseDto
+                {
+                    IsSuccess = true,
+                    Message = "Email sent with password reset link. Please check your email."
+                });
+            }
+            else
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Message = response.Content!.ToString()
+                });
+            }
         }
+
 
         private string GenerateToken(AppUser user)
         {

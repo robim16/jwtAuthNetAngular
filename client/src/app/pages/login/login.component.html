@@ -23,7 +23,9 @@
                 {{ hide ? 'visibility_off' : 'visibility'}}
             </mat-icon>
         </mat-form-field>
-        <button [disabled]="!form.valid" type="submit" class="w-full border border-slate-200 rounded-md disabled:bg-purple-400 py-2 px-3 bg-purple-700 text-white font-bold">
+
+        <a routerLink="/forget-password">Forgot Password?</a>
+        <button [disabled]="!form.valid" type="submit" class="w-full mt-4 border border-slate-200 rounded-md disabled:bg-purple-400 py-2 px-3 bg-purple-700 text-white font-bold">
             login
         </button>
 
