@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-forget-password',
-  imports: [FormsModule, MatSnackBarModule],
+  imports: [FormsModule, MatIcon, MatSnackBarModule],
   templateUrl: './forget-password.component.html',
   styleUrl: './forget-password.component.css'
 })
