@@ -212,6 +212,13 @@ namespace API.Controllers
         }
 
 
+        [HttpPost]
+        public async Task<ActionResult> ChangePassword(ChangePasswordDto change)
+        {
+            
+        }
+
+
         private string GenerateToken(AppUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
