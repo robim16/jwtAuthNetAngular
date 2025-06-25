@@ -18,5 +18,22 @@ export class ChangePasswordComponent {
   router = inject(Router)
 
 
-  changePassword() {}
+  changePassword() {
+    this.authService.changePassword({
+      email: this.authService.getUserDetail()?.email,
+      newPassword: this.newPassword,
+      currentPassword: this.currentPassword
+    }).subscribe({
+      next:(response)=> {
+        if (response.isSuccess) {
+          this.matSnackBar.open(response.message, "Close", {
+            duration: 3000
+          });
+
+          this.authService.logout()
+          this.router.navigate(["/login"])
+        }
+      }
+    })
+  }
 }
