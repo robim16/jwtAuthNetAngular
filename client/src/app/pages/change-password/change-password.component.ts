@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-change-password',
@@ -11,9 +12,9 @@ import { Router } from '@angular/router';
   styleUrl: './change-password.component.css'
 })
 export class ChangePasswordComponent {
-  newPassword!:string
-  currentPassword!:string
-  authService=inject(AuthService)
+  newPassword!: string
+  currentPassword!: string
+  authService = inject(AuthService)
   matSnackBar = inject(MatSnackBar)
   router = inject(Router)
 
@@ -24,7 +25,7 @@ export class ChangePasswordComponent {
       newPassword: this.newPassword,
       currentPassword: this.currentPassword
     }).subscribe({
-      next:(response)=> {
+      next: (response) => {
         if (response.isSuccess) {
           this.matSnackBar.open(response.message, "Close", {
             duration: 3000
@@ -33,6 +34,16 @@ export class ChangePasswordComponent {
           this.authService.logout()
           this.router.navigate(["/login"])
         }
+        else {
+          this.matSnackBar.open(response.message, "Close", {
+            duration: 3000
+          });
+        }
+      },
+      error: (err: HttpErrorResponse) => {
+        this.matSnackBar.open(err.error.message, "Close", {
+          duration: 3000
+        });
       }
     })
   }

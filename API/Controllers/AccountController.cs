@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Api.Dtos;
 using API.Dtos;
@@ -105,7 +106,16 @@ namespace API.Controllers
             
             var token = GenerateToken(user);
 
-            return Ok(new AuthResponseDto{
+            var refreshToken = GenerateRefreshToken();
+
+            _ = int.TryParse(_configuration.GetSection("JWTSetting").GetSection("RefreshTokenValidityIn").Value!, out int RefreshTokenValidityIn);
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(RefreshTokenValidityIn);
+
+
+            return Ok(new AuthResponseDto
+            {
                 Token = token,
                 IsSuccess = true,
                 Message = "Login Success."
@@ -212,7 +222,7 @@ namespace API.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("change-password")]
         public async Task<ActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
         {
             var user = await _userManager.FindByEmailAsync(changePasswordDto.Email);
@@ -236,6 +246,22 @@ namespace API.Controllers
                     Message = "Password changed successfully"
                 });
             }
+
+            return BadRequest(new AuthResponseDto
+            {
+                IsSuccess = false,
+                Message = result.Errors.FirstOrDefault()!.Description
+            });
+        }
+
+
+
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
 
 
