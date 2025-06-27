@@ -112,18 +112,57 @@ namespace API.Controllers
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(RefreshTokenValidityIn);
+            await _userManager.UpdateAsync(user);
 
 
             return Ok(new AuthResponseDto
             {
                 Token = token,
                 IsSuccess = true,
-                Message = "Login Success."
+                Message = "Login Success.",
+                RefreshToken = refreshToken
             });
+
+        }
+
+
+
+        
+        [AllowAnonymous]
+        [HttpPost("refresh-token")]
+
+        public async Task<ActionResult<AuthResponseDto>> RefreshToken(TokenDto tokenDto)
+        {
+            if(!ModelState.IsValid)
+            {
+               return BadRequest(ModelState);
+            }
+
+            var principal = GetPrincipalFromExpiredToken(tokenDto.Token);
 
 
         }
 
+        private ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JwtSetting").GetSection("securityKey").Value!)),
+                ValidateLifetime = false
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var principal = tokenHandler.ValidateToken(token, tokenParameters, out SecurityToken securityToken);
+
+            if (securityToken is not JwtSecurityToken jwtSecurityToken || jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityTokenException("Invalid token");
+
+
+            return principal;
+        }
 
         [AllowAnonymous]
         [HttpPost("forgot-password")]
