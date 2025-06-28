@@ -127,21 +127,48 @@ namespace API.Controllers
 
 
 
-        
+
         [AllowAnonymous]
         [HttpPost("refresh-token")]
 
         public async Task<ActionResult<AuthResponseDto>> RefreshToken(TokenDto tokenDto)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-               return BadRequest(ModelState);
+                return BadRequest(ModelState);
             }
 
             var principal = GetPrincipalFromExpiredToken(tokenDto.Token);
+            var user = await _userManager.FindByEmailAsync(tokenDto.Email);
 
+            if (principal is null || user is null || user.RefreshToken != tokenDto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Message = "Invalid client request"
+                });
+
+            }
+
+            var newJwtToken = GenerateToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+            _ = int.TryParse(_configuration.GetSection("JWTSetting").GetSection("RefreshTokenValidityIn").Value!, out int RefreshTokenValidityIn);
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(RefreshTokenValidityIn);
+
+            await _userManager.UpdateAsync(user);
+
+            return Ok(new AuthResponseDto
+            {
+                IsSuccess = true,
+                Token = newJwtToken,
+                RefreshToken = newRefreshToken,
+                Message = "Refreshed token successfully"
+            });
 
         }
+
 
         private ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
         {
