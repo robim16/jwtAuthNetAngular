@@ -111,4 +111,11 @@ export class AuthService {
     const userDetail:AuthResponse = JSON.parse(user)
     return userDetail.refreshToken
   }
+
+  getRefreshToken = (): string | null => {
+    const user = localStorage.getItem(this.userKey)
+    if(!user) return null
+    const userDetail:AuthResponse = JSON.parse(user)
+    return userDetail.refreshToken
+  }
 }
