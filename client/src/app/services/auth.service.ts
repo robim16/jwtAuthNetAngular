@@ -68,8 +68,7 @@ export class AuthService {
   isLoggedIn = (): boolean => {
     const token = this.getToken()
     if (!token) return false;
-
-    return true
+    return !this.isTokenExpired();
   }
 
 
@@ -78,8 +77,8 @@ export class AuthService {
     if (!token) return true
     const decoded = jwtDecode(token)
     const isTokenExpired = Date.now() >= decoded['exp']! * 1000
-    // if (isTokenExpired) this.logout()
-    return true
+    if (isTokenExpired) this.logout();
+    return isTokenExpired;
   }
 
   getRoles = (): string[] | null => {
