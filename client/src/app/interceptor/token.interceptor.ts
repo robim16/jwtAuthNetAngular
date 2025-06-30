@@ -32,6 +32,8 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
                   Authorization:`Bearer ${response.token}`
                 }
               })
+
+              location.reload()
             }
           },
           error:() => {

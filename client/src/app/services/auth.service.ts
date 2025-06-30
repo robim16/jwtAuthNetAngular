@@ -69,7 +69,7 @@ export class AuthService {
     const token = this.getToken()
     if (!token) return false;
 
-    return !this.isTokenExpired()
+    return true
   }
 
 
@@ -79,7 +79,7 @@ export class AuthService {
     const decoded = jwtDecode(token)
     const isTokenExpired = Date.now() >= decoded['exp']! * 1000
     // if (isTokenExpired) this.logout()
-    return isTokenExpired
+    return true
   }
 
   getRoles = (): string[] | null => {
